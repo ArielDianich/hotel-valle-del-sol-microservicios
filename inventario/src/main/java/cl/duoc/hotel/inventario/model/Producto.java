@@ -1,9 +1,8 @@
 package cl.duoc.hotel.inventario.model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Entity
@@ -14,10 +13,15 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank @Size(max = 100)
+    @Column(nullable = false, unique = true)
     private String nombre;
 
-    @NotNull(message = "El stock es obligatorio")
-    @Min(value = 0, message = "El stock no puede ser negativo")
+    @Min(0)
+    @Column(nullable = false)
     private Integer stock;
+
+    @DecimalMin("0.0") @Digits(integer=8, fraction=2)
+    @Column(nullable = false)
+    private BigDecimal precio;
 }

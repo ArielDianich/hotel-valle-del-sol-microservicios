@@ -1,8 +1,8 @@
-package cl.duoc.hotel.carrito.controllers;
+package cl.duoc.hotel.carrito.controller;
 
-import jakarta.validation.Valid;
 import cl.duoc.hotel.carrito.model.Carrito;
 import cl.duoc.hotel.carrito.repository.CarritoRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +18,13 @@ public class CarritoController {
         this.carritoRepository = carritoRepository;
     }
 
-    // GET: Listar todos los carritos
+    // GET: Listar todos los ítems del carrito
     @GetMapping
     public List<Carrito> getAll() {
         return carritoRepository.findAll();
     }
 
-    // GET: Obtener un carrito por ID
+    // GET: Obtener un ítem por ID
     @GetMapping("/{id}")
     public ResponseEntity<Carrito> getById(@PathVariable Long id) {
         return carritoRepository.findById(id)
@@ -32,32 +32,35 @@ public class CarritoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST: Crear un nuevo carrito
+    // POST: Añadir un ítem al carrito
     @PostMapping
-    public Carrito save(@Valid @RequestBody Carrito carrito) {
-        return carritoRepository.save(carrito);
+    public ResponseEntity<Carrito> save(@Valid @RequestBody Carrito carrito) {
+        Carrito creado = carritoRepository.save(carrito);
+        return ResponseEntity.status(201).body(creado);
     }
 
-    // PUT: Actualizar un carrito existente
+    // PUT: Actualizar un ítem existente
     @PutMapping("/{id}")
-    public ResponseEntity<Carrito> update(@PathVariable Long id, @Valid @RequestBody Carrito carritoActualizado) {
+    public ResponseEntity<Carrito> update(@PathVariable Long id,
+                                          @Valid @RequestBody Carrito carritoActualizado) {
         return carritoRepository.findById(id)
-                .map(carrito -> {
-                    carrito.setProducto(carritoActualizado.getProducto());
-                    carrito.setCantidad(carritoActualizado.getCantidad());
-                    return ResponseEntity.ok(carritoRepository.save(carrito));
+                .map(existing -> {
+                    // Aquí cambiamos productoId en lugar de la entidad Producto
+                    existing.setProductoId(carritoActualizado.getProductoId());
+                    existing.setCantidad(carritoActualizado.getCantidad());
+                    Carrito actualizado = carritoRepository.save(existing);
+                    return ResponseEntity.ok(actualizado);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // DELETE: Eliminar un carrito por ID
+    // DELETE: Eliminar un ítem del carrito por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (carritoRepository.existsById(id)) {
-            carritoRepository.deleteById(id);
-            return ResponseEntity.noContent().build(); // 204
-        } else {
-            return ResponseEntity.notFound().build(); // 404
+        if (!carritoRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
         }
+        carritoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

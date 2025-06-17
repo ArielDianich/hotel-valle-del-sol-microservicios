@@ -2,7 +2,6 @@ package cl.duoc.hotel.carrito.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
@@ -13,9 +12,11 @@ public class Carrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre del producto no puede estar vacío")
-    private String producto;
+    // Guardamos solo el ID del producto, no la entidad inventario.Producto
+    @Column(name = "producto_id", nullable = false)
+    private Long productoId;
 
     @Min(value = 1, message = "La cantidad debe ser al menos 1")
-    private int cantidad;
+    @Column(nullable = false)
+    private Integer cantidad;
 }
