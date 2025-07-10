@@ -5,7 +5,6 @@
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -21,19 +20,32 @@
 
   <properties>
     <java.version>17</java.version>
+    <!-- versión Springdoc/OpenAPI -->
+    <springdoc.version>2.8.9</springdoc.version>
   </properties>
 
   <dependencies>
-    <!-- Spring Data JPA -->
+    <!-- JPA + Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
-
-    <!-- Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- HATEOAS -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-hateoas</artifactId>
+    </dependency>
+
+    <!-- OpenAPI / Swagger UI -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc.version}</version>
     </dependency>
 
     <!-- Oracle JDBC & Wallet -->
@@ -59,14 +71,6 @@
       <version>21.11.0.0</version>
     </dependency>
 
-    <!-- Lombok -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.30</version>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- Validation -->
     <dependency>
       <groupId>jakarta.validation</groupId>
@@ -79,17 +83,30 @@
       <version>8.0.1.Final</version>
     </dependency>
 
-    <!-- Tests -->
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.30</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Tests: JUnit 5 + Mockito -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Java compiler + Lombok -->
+      <!-- Java compiler + Lombok annotation processing -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -108,17 +125,12 @@
         </configuration>
       </plugin>
 
-      <!-- Repackage executable JAR under classifier "exec" -->
+      <!-- Empaqueta tu aplicación Spring Boot -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>3.5.0</version>
-        <configuration>
-          <classifier>exec</classifier>
-          <mainClass>cl.duoc.hotel.inventario.InventarioApplication</mainClass>
-        </configuration>
       </plugin>
     </plugins>
   </build>
-
 </project>
