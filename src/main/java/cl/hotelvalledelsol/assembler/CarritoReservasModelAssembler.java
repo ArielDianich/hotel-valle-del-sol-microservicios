@@ -1,4 +1,4 @@
-﻿package cl.hotelvalledelsol.assembler;
+package cl.hotelvalledelsol.assembler;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -15,3 +15,4 @@ public class CarritoReservasModelAssembler extends RepresentationModelAssemblerS
         return EntityModel.of(entity);
     }
 }
+

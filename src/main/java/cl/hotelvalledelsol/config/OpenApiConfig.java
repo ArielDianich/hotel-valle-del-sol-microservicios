@@ -1,4 +1,4 @@
-﻿package cl.hotelvalledelsol.config;
+package cl.hotelvalledelsol.config;
 
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
