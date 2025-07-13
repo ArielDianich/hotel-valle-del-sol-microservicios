@@ -1,52 +1,105 @@
 package cl.hotelvalledelsol.inventario.controller;
 
-import cl.hotelvalledelsol.inventario.model.Habitacion;
-import cl.hotelvalledelsol.inventario.service.HabitacionService;
+import java.util.List;
+
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import cl.hotelvalledelsol.inventario.model.Habitacion;
+import cl.hotelvalledelsol.inventario.service.HabitacionService;
+import cl.hotelvalledelsol.assembler.HabitacionModelAssembler;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/habitaciones")
+@RequestMapping("/api/habitaciones")
+@Tag(name = "Habitaciones", description = "Operaciones sobre las habitaciones")
 public class HabitacionController {
 
     private final HabitacionService service;
+    private final HabitacionModelAssembler assembler;
 
-    public HabitacionController(HabitacionService service) {
-        this.service = service;
+    public HabitacionController(HabitacionService service,
+                                HabitacionModelAssembler assembler) {
+        this.service   = service;
+        this.assembler = assembler;
     }
 
+    @Operation(summary = "Listar todas las habitaciones", description = "Devuelve todas las habitaciones disponibles")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping
-    public List<Habitacion> listarTodas() {
-        return service.listarTodas();
+    public ResponseEntity<CollectionModel<EntityModel<Habitacion>>> listarTodas() {
+        List<Habitacion> lista = service.listarTodas();
+        CollectionModel<EntityModel<Habitacion>> recursos =
+            assembler.toCollectionModel(lista);
+        return ResponseEntity.ok(recursos);
     }
 
+    @Operation(summary = "Obtener habitación por ID", description = "Busca y devuelve una habitación según su identificador")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Habitación encontrada"),
+        @ApiResponse(responseCode = "404", description = "Habitación no encontrada")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<Habitacion> obtenerPorId(@PathVariable Long id) {
-        return service.obtenerPorId(id)
-                      .map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EntityModel<Habitacion>> obtenerPorId(@PathVariable Long id) {
+        Habitacion h = service.obtenerPorId(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + id));
+        return ResponseEntity.ok(assembler.toModel(h));
     }
 
+    @Operation(summary = "Crear nueva habitación", description = "Registra una nueva habitación con los datos proporcionados")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Habitación creada"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos en la solicitud")
+    })
     @PostMapping
-    public Habitacion crear(@RequestBody Habitacion nueva) {
-        return service.crear(nueva);
+    public ResponseEntity<EntityModel<Habitacion>> crear(@RequestBody @Valid Habitacion nueva) {
+        Habitacion creada = service.crear(nueva);
+        EntityModel<Habitacion> resource = assembler.toModel(creada);
+        return ResponseEntity
+                .created(resource.getRequiredLink("self").toUri())
+                .body(resource);
     }
 
+    @Operation(summary = "Actualizar habitación", description = "Modifica una habitación existente por su ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Habitación actualizada"),
+        @ApiResponse(responseCode = "404", description = "Habitación no encontrada"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos en la solicitud")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<Habitacion> actualizar(@PathVariable Long id, @RequestBody Habitacion datos) {
-        return service.obtenerPorId(id)
-                      .map(h -> ResponseEntity.ok(service.actualizar(id, datos)))
-                      .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EntityModel<Habitacion>> actualizar(
+            @PathVariable Long id,
+            @RequestBody @Valid Habitacion datos) {
+        Habitacion actualizada = service.actualizar(id, datos);
+        return ResponseEntity.ok(assembler.toModel(actualizada));
     }
 
+    @Operation(summary = "Eliminar habitación", description = "Borra una habitación por su identificador")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Habitación eliminada"),
+        @ApiResponse(responseCode = "404", description = "Habitación no encontrada")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (service.obtenerPorId(id).isPresent()) {
-            service.eliminar(id);
-            return ResponseEntity.noContent().build();
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ResponseStatus(code = org.springframework.http.HttpStatus.NOT_FOUND)
+    static class ResourceNotFoundException extends RuntimeException {
+        ResourceNotFoundException(String msg) {
+            super(msg);
         }
-        return ResponseEntity.notFound().build();
     }
 }

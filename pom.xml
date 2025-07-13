@@ -69,7 +69,7 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
-        <!-- Integración HATEOAS para Springdoc (versión 1.8.0) -->
+        <!-- Integración HATEOAS para Springdoc -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-hateoas</artifactId>
@@ -111,6 +111,7 @@
 
     <build>
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -119,6 +120,7 @@
                 </configuration>
             </plugin>
 
+            <!-- Compiler settings -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -130,6 +132,7 @@
                 </configuration>
             </plugin>
 
+            <!-- Surefire for tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -139,6 +142,7 @@
                 </configuration>
             </plugin>
 
+            <!-- JaCoCo for coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -152,6 +156,26 @@
                         <id>report</id>
                         <phase>verify</phase>
                         <goals><goal>report</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Generate OpenAPI spec -->
+            <plugin>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                <!-- Debe usar la versión 1.5 disponible en Maven Central -->
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-openapi-spec</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <outputFileName>openapi.json</outputFileName>
+                            <outputDir>${project.build.directory}</outputDir>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

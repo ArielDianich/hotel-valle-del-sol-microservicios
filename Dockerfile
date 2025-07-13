@@ -20,3 +20,9 @@ COPY --from=build /app/target/hotel-valle-del-sol-1.0.0-SNAPSHOT.jar app.jar
 # Puerto expuesto y comando de arranque
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
+
+RUN addgroup -S app && adduser -S app -G app
+USER app
+
+HEALTHCHECK --interval=30s --timeout=5s \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
