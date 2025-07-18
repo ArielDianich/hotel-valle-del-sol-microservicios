@@ -2,12 +2,19 @@ package cl.hotelvalledelsol.assembler;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
+import org.springframework.stereotype.Component;
 import cl.hotelvalledelsol.carrito.controller.CarritoReservasController;
 import cl.hotelvalledelsol.carrito.model.CarritoReservas;
 
-public class CarritoReservasModelAssembler extends RepresentationModelAssemblerSupport<CarritoReservas, EntityModel<CarritoReservas>> {
+@Component
+public class CarritoReservasModelAssembler
+        extends RepresentationModelAssemblerSupport<CarritoReservas, EntityModel<CarritoReservas>> {
+
     public CarritoReservasModelAssembler() {
-        super(CarritoReservasController.class, (Class<EntityModel<CarritoReservas>>)(Class<?>) EntityModel.class);
+        super(
+            CarritoReservasController.class,
+            (Class<EntityModel<CarritoReservas>>) (Class<?>) EntityModel.class
+        );
     }
 
     @Override
@@ -15,4 +22,3 @@ public class CarritoReservasModelAssembler extends RepresentationModelAssemblerS
         return EntityModel.of(entity);
     }
 }
-

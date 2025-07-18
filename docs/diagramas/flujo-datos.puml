@@ -1,0 +1,15 @@
+@startuml
+actor Cliente
+participant "API Gateway" as GW
+participant "Booking Service" as BS
+participant "Room Service"    as RS
+database "MySQL DB"           as DB
+
+Cliente -> GW : Solicita reserva
+GW -> BS : POST /reservas
+BS -> RS : GET /rooms/available
+RS --> BS : lista de habitaciones
+BS -> DB : INSERT reserva
+DB --> BS : OK
+BS --> Cliente : Confirmación
+@enduml

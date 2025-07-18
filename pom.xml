@@ -21,6 +21,17 @@
         <relativePath/>
     </parent>
 
+    <!-- Para forzar la resolución del plugin desde Maven Central -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <properties>
         <java.version>17</java.version>
         <springdoc.version>2.6.0</springdoc.version>
@@ -83,7 +94,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Testing -->
+        <!-- Testing básicos -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -106,6 +117,22 @@
             <artifactId>datafaker</artifactId>
             <version>2.3.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers para integración de MySQL -->
+        <dependency>
+          <groupId>org.testcontainers</groupId>
+          <artifactId>mysql</artifactId>
+          <version>1.17.6</version>
+          <scope>test</scope>
+        </dependency>
+
+        <!-- Soporte JUnit Jupiter para Testcontainers -->
+        <dependency>
+          <groupId>org.testcontainers</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>1.17.6</version>
+          <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -132,7 +159,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire for tests -->
+            <!-- Surefire para tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -142,7 +169,7 @@
                 </configuration>
             </plugin>
 
-            <!-- JaCoCo for coverage -->
+            <!-- JaCoCo para cobertura -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -160,11 +187,10 @@
                 </executions>
             </plugin>
 
-            <!-- Generate OpenAPI spec -->
+            <!-- Springdoc OpenAPI Maven Plugin -->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
-                <!-- Debe usar la versión 1.5 disponible en Maven Central -->
                 <version>1.5</version>
                 <executions>
                     <execution>

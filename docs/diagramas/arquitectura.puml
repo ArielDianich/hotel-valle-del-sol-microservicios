@@ -1,0 +1,19 @@
+@startuml
+!define RECTANGLE rectangle
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+
+RECTANGLE Gateway      as GW
+RECTANGLE AuthService as AS
+RECTANGLE BookingService as BS
+RECTANGLE RoomService    as RS
+RECTANGLE Database      as DB
+
+GW --> AS : /auth/**
+GW --> BS : /booking/**
+GW --> RS : /rooms/**
+BS --> DB : reads/writes
+RS --> DB : reads/writes
+@enduml
